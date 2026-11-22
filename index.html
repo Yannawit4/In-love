@@ -153,7 +153,7 @@
             text-shadow: 0 2px 12px rgba(255, 111, 165, 0.2);
         }
 
-        /* 🔑 เรียงแนวตั้ง: "ใช่แล้ว" อยู่บน / "ไม่โว้ย" อยู่ล่าง */
+        /* เรียงแนวตั้ง: "เป็นค้าบ" อยู่บน / "ไม่เป็นโว้ย" อยู่ล่าง */
         .cookie-buttons {
             display: flex;
             flex-direction: column;
@@ -390,8 +390,8 @@
             <h2 class="cookie-title">คุณชอบฉันไหม?</h2>
 
             <div class="cookie-buttons">
-                <button id="accept-button" class="btn btn-primary">ใช่แล้ว😘</button>
-                <button id="decline-button" class="btn btn-secondary">ไม่โว้ยไอกาก</button>
+                <button id="accept-button" class="btn btn-primary">เป็นค้าบ</button>
+                <button id="decline-button" class="btn btn-secondary">ไม่เป็นโว้ย</button>
             </div>
         </div>
     </div>
@@ -434,9 +434,9 @@
         setTimeout(() => loadingScreen.classList.add('hide'), 3000);
 
         /* ==========================================================
-           🌀 ปุ่ม "ไม่โว้ยไอกาก"
+           🌀 ปุ่ม "ไม่เป็นโว้ย"
            - 1 คลิก = หด 1 สเต็ป + วาร์ปไปตำแหน่งสุ่มทั่วจอ
-           - ไม่ทับปุ่ม "ใช่แล้ว"
+           - ไม่ทับปุ่ม "เป็นค้าบ"
            ========================================================== */
         let declineScale = 1;
         const MIN_SCALE  = 0.22;
@@ -575,7 +575,7 @@
         window.addEventListener('resize', clampDeclineInside);
         window.addEventListener('orientationchange', () => setTimeout(clampDeclineInside, 150));
 
-        /* ================= ปุ่ม "ใช่แล้ว" ================= */
+        /* ================= ปุ่ม "เป็นค้าบ" ================= */
         acceptBtn.addEventListener('click', () => {
             if (warped) declineBtn.style.display = 'none';
 
