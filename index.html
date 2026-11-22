@@ -245,31 +245,47 @@
             position: relative;
             z-index: 2;
             max-width: 620px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .big-heart {
-            font-size: clamp(56px, 16vw, 96px);
-            line-height: 1;
-            display: inline-block;
-            animation: heartBeat 1.1s ease-in-out infinite;
-            filter: drop-shadow(0 10px 24px rgba(255, 111, 165, 0.45));
-            margin-bottom: 12px;
+        /* 🎀 GIF กลางจอ */
+        .result-gif {
+            width: min(260px, 62vw);
+            aspect-ratio: 1 / 1;
+            margin: 0 auto 22px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #fff;
+            border: 4px solid #ffffff;
+            outline: 3px dashed #ffb6d3;
+            outline-offset: 5px;
+            box-shadow:
+                0 18px 44px rgba(255, 111, 165, 0.40),
+                0 6px 16px rgba(255, 140, 190, 0.25);
+            animation: gifFloat 3.4s ease-in-out infinite;
+            position: relative;
         }
 
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            14%      { transform: scale(1.18); }
-            28%      { transform: scale(1); }
-            42%      { transform: scale(1.14); }
-            70%      { transform: scale(1); }
+        .result-gif img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes gifFloat {
+            0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+            50%      { transform: translateY(-8px) rotate(1.2deg); }
         }
 
         .result-title {
             font-family: 'Mali', cursive;
             font-weight: 700;
-            font-size: clamp(30px, 9vw, 56px);
+            font-size: clamp(28px, 8.5vw, 52px);
             line-height: 1.25;
-            margin: 0 0 18px 0;
+            margin: 0 0 14px 0;
             background: linear-gradient(120deg, #ff4f8b 0%, #ff8bb8 45%, #ff4f8b 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -331,6 +347,23 @@
                 font-size: 15px;
                 border-radius: 14px;
             }
+
+            .result-gif {
+                width: min(210px, 64vw);
+                border-width: 3px;
+                outline-width: 2.5px;
+                outline-offset: 4px;
+                margin-bottom: 18px;
+            }
+        }
+
+        /* จอเตี้ย (เช่น landscape) — ย่อ GIF ให้พอดี */
+        @media (max-height: 620px) {
+            .result-gif {
+                width: min(160px, 42vw);
+                margin-bottom: 14px;
+            }
+            .result-title { font-size: clamp(22px, 6vw, 34px); margin-bottom: 8px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -366,7 +399,18 @@
     <!-- ===== หน้าผลลัพธ์ ===== -->
     <div id="result-screen" class="result-screen">
         <div class="result-content">
-            <div class="big-heart">💖</div>
+
+            <!-- 🎀 GIF กลางจอ -->
+            <div class="result-gif">
+                <img
+                    src="https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUyZmhweGJhM25qNzB3eHNqNXVhM2xkazhzbTF4Y3VieXJ4ZHk5dnI5MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Z21HJj2kz9uBG/giphy.gif"
+                    alt="heart gif"
+                    width="260" height="260"
+                    loading="eager"
+                    decoding="async"
+                >
+            </div>
+
             <h1 class="result-title">เราเป็นแฟนกันแล้วนะ</h1>
             <p class="result-sub">ห้ามเปลี่ยนใจแล้วน้า~ 💕</p>
         </div>
@@ -393,19 +437,16 @@
            🌀 ปุ่ม "ไม่โว้ยไอกาก"
            - 1 คลิก = หด 1 สเต็ป + วาร์ปไปตำแหน่งสุ่มทั่วจอ
            - ไม่ทับปุ่ม "ใช่แล้ว"
-           - ใช้ transform: scale() จึงไม่ทำให้ layout กระโดด
            ========================================================== */
         let declineScale = 1;
         const MIN_SCALE  = 0.22;
         let declineDead  = false;
         let warped       = false;
 
-        /* --- ครั้งแรกที่กด: ยึดปุ่มเป็น fixed แล้วย้ายมาอยู่บน body --- */
         function takeoverDecline() {
             const rect = declineBtn.getBoundingClientRect();
             const parent = declineBtn.parentNode;
 
-            // ล็อกตำแหน่ง/ขนาดก่อน (ขณะยังอยู่ใน flow)
             declineBtn.style.position     = 'fixed';
             declineBtn.style.left         = rect.left + 'px';
             declineBtn.style.top          = rect.top  + 'px';
@@ -418,28 +459,24 @@
             declineBtn.style.transition   =
                 'transform .24s cubic-bezier(.34,1.56,.64,1), opacity .3s ease, background .2s ease, box-shadow .2s ease';
 
-            // ใส่ตัว佔位 กัน "ใช่แล้ว" ขยับขึ้น
             const ph = document.createElement('div');
-            ph.style.height       = rect.height + 'px';
-            ph.style.width        = '100%';
-            ph.style.flex         = '0 0 auto';
+            ph.style.height        = rect.height + 'px';
+            ph.style.width         = '100%';
+            ph.style.flex          = '0 0 auto';
             ph.style.pointerEvents = 'none';
             parent.appendChild(ph);
 
-            // ย้ายออกไป body → fixed อ้างอิง viewport จริง ๆ
             document.body.appendChild(declineBtn);
-
             warped = true;
         }
 
-        /* --- สุ่มตำแหน่งใหม่ให้ปุ่ม (ไม่ทับ accept) --- */
         function warpDecline() {
             const vw = window.innerWidth;
             const vh = window.innerHeight;
 
-            const ow = declineBtn.offsetWidth;   // ขนาด layout (ไม่สนิท transform)
-            const oh = declineBtn.offsetHeight;
-            const visW = ow * declineScale;     // ขนาดที่มองเห็น (หลัง scale)
+            const ow   = declineBtn.offsetWidth;
+            const oh   = declineBtn.offsetHeight;
+            const visW = ow * declineScale;
             const visH = oh * declineScale;
 
             const margin = 12;
@@ -448,7 +485,6 @@
             const maxX = Math.max(minX, vw - visW - margin);
             const maxY = Math.max(minY, vh - visH - margin);
 
-            // กล่องของปุ่ม "ใช่แล้ว" เพื่อหลบ
             const a   = acceptBtn.getBoundingClientRect();
             const pad = 10;
 
@@ -471,34 +507,27 @@
                 if (!overlap) break;
             }
 
-            // แปลง "มุมซ้ายบนที่มองเห็น" → left/top ของ layout box
             const left = visX + visW / 2 - ow / 2;
             const top  = visY + visH / 2 - oh / 2;
 
-            // ไม่มี transition กับ left/top → วาร์ปทันที
             declineBtn.style.left = left + 'px';
             declineBtn.style.top  = top  + 'px';
         }
 
-        /* --- คลิก: หด + วาร์ป + แสงวาบ --- */
         declineBtn.addEventListener('click', () => {
             if (declineDead) return;
 
             if (!warped) takeoverDecline();
 
-            // 1 คลิก = หด 1 สเต็ป
             declineScale *= 0.82;
             const isDead = declineScale <= MIN_SCALE;
             if (isDead) declineScale = MIN_SCALE;
 
-            // วาร์ปไปที่ใหม่
             warpDecline();
 
-            // เอียงนิดหน่อย + ย่อ
             const rot = isDead ? 0 : (Math.random() * 20 - 10);
             declineBtn.style.transform = `scale(${declineScale}) rotate(${rot}deg)`;
 
-            // แสงวาบตอนวาร์ป (ไม่กระทบ transform)
             try {
                 declineBtn.animate(
                     [
@@ -509,7 +538,6 @@
                 );
             } catch (e) {}
 
-            // 💀 เล็กเกินกว่าจะกดได้แล้ว
             if (isDead) {
                 declineDead = true;
                 declineBtn.disabled = true;
@@ -519,15 +547,14 @@
             }
         });
 
-        /* --- ปรับตำแหน่งเมื่อจอเปลี่ยนขนาด/หมุนจอ --- */
         function clampDeclineInside() {
             if (!warped || declineDead) return;
 
             const vw = window.innerWidth;
             const vh = window.innerHeight;
 
-            const ow = declineBtn.offsetWidth;
-            const oh = declineBtn.offsetHeight;
+            const ow   = declineBtn.offsetWidth;
+            const oh   = declineBtn.offsetHeight;
             const visW = ow * declineScale;
             const visH = oh * declineScale;
 
@@ -550,7 +577,6 @@
 
         /* ================= ปุ่ม "ใช่แล้ว" ================= */
         acceptBtn.addEventListener('click', () => {
-            // ซ่อนปุ่มที่วาร์ปออกมาแล้ว (เพราะมันอยู่นอก question-screen แล้ว)
             if (warped) declineBtn.style.display = 'none';
 
             questionScreen.classList.add('hide');
@@ -565,7 +591,6 @@
         /* ================= ใจลอย ================= */
         const HEART_EMOJIS = ['💖', '💕', '💗', '💞', '💓', '🌸', '✨', '💘'];
         let heartRunning = false;
-        let heartTimer = null;
 
         function spawnHeart() {
             if (!heartRunning) return;
@@ -590,7 +615,7 @@
             for (let i = 0; i < 8; i++) {
                 setTimeout(spawnHeart, i * 120);
             }
-            heartTimer = setInterval(spawnHeart, 420);
+            setInterval(spawnHeart, 420);
         }
 
         /* ================= ล็อกไม่ให้ scroll ================= */
